@@ -12,7 +12,7 @@ import {
 import {
   ApiTags,
   ApiOperation,
-  ApiResponse,
+  // ApiResponse,
   ApiParam,
   ApiBody,
   ApiCreatedResponse,
@@ -39,7 +39,8 @@ export class UsersController {
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
     summary: 'Create a new user',
-    description: 'Create a new user in the system with the provided information',
+    description:
+      'Create a new user in the system with the provided information',
   })
   @ApiBody({ type: CreateUserDto })
   @ApiCreatedResponse({
@@ -133,7 +134,8 @@ export class UsersController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Update user information',
-    description: 'Update a user information by ID. Only send fields that need to be updated',
+    description:
+      'Update a user information by ID. Only send fields that need to be updated',
   })
   @ApiParam({
     name: 'id',

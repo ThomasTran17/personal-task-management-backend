@@ -1,6 +1,6 @@
 import * as admin from 'firebase-admin';
 import * as path from 'path';
-import { Firestore } from '@google-cloud/firestore';
+// import { Firestore } from '@google-cloud/firestore';
 
 export const FirestoreDatabaseProvider = 'FIRESTORE_DB';
 export const FirestoreOptionsProvider = 'FIRESTORE_OPTIONS';
@@ -11,7 +11,9 @@ export const firestoreProviders = [
     useFactory: () => {
       if (!admin.apps.length) {
         admin.initializeApp({
-          credential: admin.credential.cert(path.join(process.cwd(), 'firebase-adminsdk.json')),
+          credential: admin.credential.cert(
+            path.join(process.cwd(), 'firebase-adminsdk.json'),
+          ),
         });
       }
       return admin.firestore();

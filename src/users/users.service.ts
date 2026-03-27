@@ -1,4 +1,8 @@
-import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { UsersRepository } from './repositories/users.repository';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
@@ -13,7 +17,9 @@ export class UsersService {
    */
   async create(createUserDto: CreateUserDto): Promise<IUser> {
     // Check if email already exists
-    const emailExists = await this.usersRepository.emailExists(createUserDto.email);
+    const emailExists = await this.usersRepository.emailExists(
+      createUserDto.email,
+    );
     if (emailExists) {
       throw new BadRequestException('Email already registered');
     }
@@ -62,7 +68,9 @@ export class UsersService {
 
     // If email is changed, check if new email already exists
     if (updateUserDto.email && updateUserDto.email !== user.email) {
-      const emailExists = await this.usersRepository.emailExists(updateUserDto.email);
+      const emailExists = await this.usersRepository.emailExists(
+        updateUserDto.email,
+      );
       if (emailExists) {
         throw new BadRequestException('Email already registered');
       }

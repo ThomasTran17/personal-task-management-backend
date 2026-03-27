@@ -6,9 +6,7 @@ import { IUser } from '../interfaces/user.interface';
 export class UsersRepository {
   private readonly collectionName = 'users';
 
-  constructor(
-    @Inject('FIRESTORE_DB') private db: Firestore,
-  ) {}
+  constructor(@Inject('FIRESTORE_DB') private db: Firestore) {}
 
   /**
    * Create a new user
@@ -20,7 +18,7 @@ export class UsersRepository {
       createdAt: new Date(),
       updatedAt: new Date(),
     };
-    
+
     await docRef.set(userWithTimestamp);
     return { id: docRef.id, ...userWithTimestamp };
   }
@@ -30,10 +28,13 @@ export class UsersRepository {
    */
   async findAll(): Promise<IUser[]> {
     const snapshot = await this.db.collection(this.collectionName).get();
-    return snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data(),
-    } as IUser));
+    return snapshot.docs.map(
+      (doc) =>
+        ({
+          id: doc.id,
+          ...doc.data(),
+        }) as IUser,
+    );
   }
 
   /**
