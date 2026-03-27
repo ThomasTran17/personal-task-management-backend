@@ -1,7 +1,7 @@
-import { IsEmail, IsNotEmpty, IsString, IsOptional } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class CreateUserDto {
+export class RegisterDto {
   @ApiProperty({
     description: 'Email of the user',
     example: 'user@example.com',
@@ -11,13 +11,13 @@ export class CreateUserDto {
   email: string;
 
   @ApiProperty({
-    description: 'Password for the user account',
+    description: 'Password for the account',
     example: 'SecurePassword123',
-    required: false,
   })
   @IsString({ message: 'Password must be a string' })
-  @IsOptional()
-  password?: string;
+  @MinLength(6, { message: 'Password must be at least 6 characters' })
+  @IsNotEmpty({ message: 'Password is required' })
+  password: string;
 
   @ApiProperty({
     description: 'First name of the user',
@@ -34,13 +34,4 @@ export class CreateUserDto {
   @IsString({ message: 'Last name must be a string' })
   @IsNotEmpty({ message: 'Last name is required' })
   lastName: string;
-
-  @ApiProperty({
-    description: 'Avatar URL of the user',
-    example: 'https://example.com/avatar.jpg',
-    required: false,
-  })
-  @IsString({ message: 'Avatar must be a string' })
-  @IsOptional()
-  avatar?: string;
 }
