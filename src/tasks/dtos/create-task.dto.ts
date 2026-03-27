@@ -32,7 +32,9 @@ export class CreateTaskDto {
     example: TaskStatus.TODO,
     required: false,
   })
-  @IsEnum(TaskStatus, { message: 'Status must be one of: TODO, IN_PROGRESS, DONE' })
+  @IsEnum(TaskStatus, {
+    message: 'Status must be one of: TODO, IN_PROGRESS, DONE',
+  })
   @IsOptional()
   status?: TaskStatus;
 
@@ -42,7 +44,9 @@ export class CreateTaskDto {
     example: TaskPriority.MEDIUM,
     required: false,
   })
-  @IsEnum(TaskPriority, { message: 'Priority must be one of: LOW, MEDIUM, HIGH' })
+  @IsEnum(TaskPriority, {
+    message: 'Priority must be one of: LOW, MEDIUM, HIGH',
+  })
   @IsOptional()
   priority?: TaskPriority;
 

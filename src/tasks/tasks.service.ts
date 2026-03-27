@@ -49,7 +49,9 @@ export class TasksService {
     const task = await this.findOne(taskId);
 
     if (task.userId !== userId) {
-      throw new ForbiddenException('You do not have permission to access this task');
+      throw new ForbiddenException(
+        'You do not have permission to access this task',
+      );
     }
 
     return task;
@@ -65,7 +67,10 @@ export class TasksService {
   /**
    * Get all tasks for user by priority
    */
-  async findByPriority(userId: string, priority: TaskPriority): Promise<ITask[]> {
+  async findByPriority(
+    userId: string,
+    priority: TaskPriority,
+  ): Promise<ITask[]> {
     return await this.tasksRepository.findByUserIdAndPriority(userId, priority);
   }
 
@@ -78,7 +83,7 @@ export class TasksService {
     updateTaskDto: UpdateTaskDto,
   ): Promise<ITask> {
     // Check if task exists and belongs to user
-    const task = await this.findOneByUser(taskId, userId);
+    await this.findOneByUser(taskId, userId);
 
     return await this.tasksRepository.update(taskId, updateTaskDto);
   }
@@ -106,11 +111,12 @@ export class TasksService {
     done: number;
   }> {
     const allTasks = await this.findAll(userId);
-    
+
     return {
       total: allTasks.length,
       todo: allTasks.filter((t) => t.status === TaskStatus.TODO).length,
-      inProgress: allTasks.filter((t) => t.status === TaskStatus.IN_PROGRESS).length,
+      inProgress: allTasks.filter((t) => t.status === TaskStatus.IN_PROGRESS)
+        .length,
       done: allTasks.filter((t) => t.status === TaskStatus.DONE).length,
     };
   }

@@ -1,4 +1,4 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { getFirestore } from 'firebase-admin/firestore';
 import { ITask, TaskStatus, TaskPriority } from '../interfaces/task.interface';
 import { CreateTaskDto } from '../dtos/create-task.dto';
@@ -72,10 +72,7 @@ export class TasksRepository {
       (key) => updateData[key] === undefined && delete updateData[key],
     );
 
-    await this.db
-      .collection(this.collection)
-      .doc(id)
-      .update(updateData);
+    await this.db.collection(this.collection).doc(id).update(updateData);
 
     const updated = await this.findById(id);
     return updated!;

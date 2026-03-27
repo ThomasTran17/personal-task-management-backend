@@ -1,9 +1,4 @@
-import {
-  IsString,
-  IsOptional,
-  IsEnum,
-  IsDateString,
-} from 'class-validator';
+import { IsString, IsOptional, IsEnum, IsDateString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { TaskStatus, TaskPriority } from '../interfaces/task.interface';
 
@@ -32,7 +27,9 @@ export class UpdateTaskDto {
     example: TaskStatus.IN_PROGRESS,
     required: false,
   })
-  @IsEnum(TaskStatus, { message: 'Status must be one of: TODO, IN_PROGRESS, DONE' })
+  @IsEnum(TaskStatus, {
+    message: 'Status must be one of: TODO, IN_PROGRESS, DONE',
+  })
   @IsOptional()
   status?: TaskStatus;
 
@@ -42,7 +39,9 @@ export class UpdateTaskDto {
     example: TaskPriority.HIGH,
     required: false,
   })
-  @IsEnum(TaskPriority, { message: 'Priority must be one of: LOW, MEDIUM, HIGH' })
+  @IsEnum(TaskPriority, {
+    message: 'Priority must be one of: LOW, MEDIUM, HIGH',
+  })
   @IsOptional()
   priority?: TaskPriority;
 
