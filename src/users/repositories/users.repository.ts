@@ -11,7 +11,7 @@ export class UsersRepository {
   ) {}
 
   /**
-   * Tạo user mới
+   * Create a new user
    */
   async create(userData: Omit<IUser, 'id'>): Promise<IUser> {
     const docRef = this.db.collection(this.collectionName).doc();
@@ -26,7 +26,7 @@ export class UsersRepository {
   }
 
   /**
-   * Lấy tất cả users
+   * Get all users
    */
   async findAll(): Promise<IUser[]> {
     const snapshot = await this.db.collection(this.collectionName).get();
@@ -37,7 +37,7 @@ export class UsersRepository {
   }
 
   /**
-   * Lấy user theo ID
+   * Get user by ID
    */
   async findById(id: string): Promise<IUser | null> {
     const doc = await this.db.collection(this.collectionName).doc(id).get();
@@ -51,7 +51,7 @@ export class UsersRepository {
   }
 
   /**
-   * Lấy user theo email
+   * Get user by email
    */
   async findByEmail(email: string): Promise<IUser | null> {
     const snapshot = await this.db
@@ -72,7 +72,7 @@ export class UsersRepository {
   }
 
   /**
-   * Cập nhật user
+   * Update user
    */
   async update(id: string, userData: Partial<IUser>): Promise<IUser | null> {
     const docRef = this.db.collection(this.collectionName).doc(id);
@@ -97,7 +97,7 @@ export class UsersRepository {
   }
 
   /**
-   * Xóa user
+   * Delete user
    */
   async delete(id: string): Promise<boolean> {
     const docRef = this.db.collection(this.collectionName).doc(id);
@@ -112,7 +112,7 @@ export class UsersRepository {
   }
 
   /**
-   * Kiểm tra email có tồn tại
+   * Check if email exists
    */
   async emailExists(email: string): Promise<boolean> {
     const snapshot = await this.db

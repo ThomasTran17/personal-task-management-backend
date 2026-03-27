@@ -32,39 +32,39 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   /**
-   * Tạo user mới
+   * Create a new user
    * POST /users
    */
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
-    summary: 'Tạo user mới',
-    description: 'Tạo một user mới trong hệ thống với thông tin được cung cấp',
+    summary: 'Create a new user',
+    description: 'Create a new user in the system with the provided information',
   })
   @ApiBody({ type: CreateUserDto })
   @ApiCreatedResponse({
-    description: 'User được tạo thành công',
+    description: 'User created successfully',
     type: UserResponseDto,
   })
   @ApiBadRequestResponse({
-    description: 'Email đã được đăng ký hoặc dữ liệu không hợp lệ',
+    description: 'Email already registered or invalid data',
   })
   async create(@Body() createUserDto: CreateUserDto): Promise<UserResponseDto> {
     return await this.usersService.create(createUserDto);
   }
 
   /**
-   * Lấy tất cả users
+   * Get all users
    * GET /users
    */
   @Get()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
-    summary: 'Lấy danh sách tất cả users',
-    description: 'Truy xuất danh sách tất cả users trong hệ thống',
+    summary: 'Get list of all users',
+    description: 'Retrieve a list of all users in the system',
   })
   @ApiOkResponse({
-    description: 'Danh sách users được truy xuất thành công',
+    description: 'Users list retrieved successfully',
     type: [UserResponseDto],
   })
   async findAll(): Promise<UserResponseDto[]> {
@@ -72,85 +72,85 @@ export class UsersController {
   }
 
   /**
-   * Lấy user theo ID
+   * Get user by ID
    * GET /users/:id
    */
   @Get(':id')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
-    summary: 'Lấy user theo ID',
-    description: 'Truy xuất thông tin chi tiết của một user theo ID',
+    summary: 'Get user by ID',
+    description: 'Retrieve detailed information of a user by ID',
   })
   @ApiParam({
     name: 'id',
     type: String,
-    description: 'ID của user cần lấy',
+    description: 'User ID to retrieve',
     example: 'user123',
   })
   @ApiOkResponse({
-    description: 'User được tìm thấy',
+    description: 'User found',
     type: UserResponseDto,
   })
   @ApiNotFoundResponse({
-    description: 'User không tồn tại',
+    description: 'User does not exist',
   })
   async findOne(@Param('id') id: string): Promise<UserResponseDto> {
     return await this.usersService.findOne(id);
   }
 
   /**
-   * Lấy user theo email
+   * Get user by email
    * GET /users/email/:email
    */
   @Get('email/:email')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
-    summary: 'Lấy user theo email',
-    description: 'Truy xuất thông tin chi tiết của một user theo email',
+    summary: 'Get user by email',
+    description: 'Retrieve detailed information of a user by email',
   })
   @ApiParam({
     name: 'email',
     type: String,
-    description: 'Email của user cần lấy',
+    description: 'User email to retrieve',
     example: 'user@example.com',
   })
   @ApiOkResponse({
-    description: 'User được tìm thấy',
+    description: 'User found',
     type: UserResponseDto,
   })
   @ApiNotFoundResponse({
-    description: 'User với email này không tồn tại',
+    description: 'User with this email does not exist',
   })
   async findByEmail(@Param('email') email: string): Promise<UserResponseDto> {
     return await this.usersService.findByEmail(email);
   }
 
   /**
-   * Cập nhật user
+   * Update user
    * PUT /users/:id
    */
   @Put(':id')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
-    summary: 'Cập nhật thông tin user',
-    description: 'Cập nhật thông tin của một user theo ID. Chỉ cần gửi những trường cần cập nhật',
+    summary: 'Update user information',
+    description: 'Update a user information by ID. Only send fields that need to be updated',
   })
   @ApiParam({
     name: 'id',
     type: String,
-    description: 'ID của user cần cập nhật',
+    description: 'User ID to update',
     example: 'user123',
   })
   @ApiBody({ type: UpdateUserDto })
   @ApiOkResponse({
-    description: 'User được cập nhật thành công',
+    description: 'User updated successfully',
     type: UserResponseDto,
   })
   @ApiBadRequestResponse({
-    description: 'Email mới đã được đăng ký hoặc dữ liệu không hợp lệ',
+    description: 'New email already registered or invalid data',
   })
   @ApiNotFoundResponse({
-    description: 'User không tồn tại',
+    description: 'User does not exist',
   })
   async update(
     @Param('id') id: string,
@@ -160,26 +160,26 @@ export class UsersController {
   }
 
   /**
-   * Xóa user
+   * Delete user
    * DELETE /users/:id
    */
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({
-    summary: 'Xóa user',
-    description: 'Xóa một user khỏi hệ thống theo ID',
+    summary: 'Delete user',
+    description: 'Delete a user from the system by ID',
   })
   @ApiParam({
     name: 'id',
     type: String,
-    description: 'ID của user cần xóa',
+    description: 'User ID to delete',
     example: 'user123',
   })
   @ApiNoContentResponse({
-    description: 'User được xóa thành công',
+    description: 'User deleted successfully',
   })
   @ApiNotFoundResponse({
-    description: 'User không tồn tại',
+    description: 'User does not exist',
   })
   async delete(@Param('id') id: string): Promise<void> {
     return await this.usersService.delete(id);

@@ -3,45 +3,45 @@ import { IUser } from '../interfaces/user.interface';
 
 export class UserResponseDto implements IUser {
   @ApiProperty({
-    description: 'ID của user (Firestore document ID)',
+    description: 'User ID (Firestore document ID)',
     example: 'user123abc',
   })
   id: string;
 
   @ApiProperty({
-    description: 'Email của user',
+    description: 'Email of the user',
     example: 'user@example.com',
   })
   email: string;
 
   @ApiProperty({
-    description: 'Tên của user',
+    description: 'First name of the user',
     example: 'John',
   })
   firstName: string;
 
   @ApiProperty({
-    description: 'Họ của user',
+    description: 'Last name of the user',
     example: 'Doe',
   })
   lastName: string;
 
   @ApiProperty({
-    description: 'URL ảnh đại diện của user',
+    description: 'Avatar URL of the user',
     example: 'https://example.com/avatar.jpg',
     required: false,
   })
   avatar?: string;
 
   @ApiProperty({
-    description: 'Thời gian tạo user',
+    description: 'User creation timestamp',
     example: '2024-03-27T10:30:00Z',
     required: false,
   })
   createdAt?: Date;
 
   @ApiProperty({
-    description: 'Thời gian cập nhật user gần nhất',
+    description: 'User last update timestamp',
     example: '2024-03-27T14:45:00Z',
     required: false,
   })

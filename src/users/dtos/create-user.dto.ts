@@ -3,35 +3,35 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateUserDto {
   @ApiProperty({
-    description: 'Email của user',
+    description: 'Email of the user',
     example: 'user@example.com',
   })
-  @IsEmail({}, { message: 'Email không hợp lệ' })
-  @IsNotEmpty({ message: 'Email là bắt buộc' })
+  @IsEmail({}, { message: 'Invalid email format' })
+  @IsNotEmpty({ message: 'Email is required' })
   email: string;
 
   @ApiProperty({
-    description: 'Tên của user',
+    description: 'First name of the user',
     example: 'John',
   })
-  @IsString({ message: 'Tên phải là chuỗi' })
-  @IsNotEmpty({ message: 'Tên là bắt buộc' })
+  @IsString({ message: 'First name must be a string' })
+  @IsNotEmpty({ message: 'First name is required' })
   firstName: string;
 
   @ApiProperty({
-    description: 'Họ của user',
+    description: 'Last name of the user',
     example: 'Doe',
   })
-  @IsString({ message: 'Họ phải là chuỗi' })
-  @IsNotEmpty({ message: 'Họ là bắt buộc' })
+  @IsString({ message: 'Last name must be a string' })
+  @IsNotEmpty({ message: 'Last name is required' })
   lastName: string;
 
   @ApiProperty({
-    description: 'URL ảnh đại diện của user',
+    description: 'Avatar URL of the user',
     example: 'https://example.com/avatar.jpg',
     required: false,
   })
-  @IsString({ message: 'Avatar phải là chuỗi' })
+  @IsString({ message: 'Avatar must be a string' })
   @IsOptional()
   avatar?: string;
 }

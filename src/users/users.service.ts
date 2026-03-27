@@ -9,62 +9,62 @@ export class UsersService {
   constructor(private readonly usersRepository: UsersRepository) {}
 
   /**
-   * Tạo user mới
+   * Create a new user
    */
   async create(createUserDto: CreateUserDto): Promise<IUser> {
-    // Kiểm tra email đã tồn tại
+    // Check if email already exists
     const emailExists = await this.usersRepository.emailExists(createUserDto.email);
     if (emailExists) {
-      throw new BadRequestException('Email đã được đăng ký');
+      throw new BadRequestException('Email already registered');
     }
 
     return await this.usersRepository.create(createUserDto);
   }
 
   /**
-   * Lấy tất cả users
+   * Get all users
    */
   async findAll(): Promise<IUser[]> {
     return await this.usersRepository.findAll();
   }
 
   /**
-   * Lấy user theo ID
+   * Get user by ID
    */
   async findOne(id: string): Promise<IUser> {
     const user = await this.usersRepository.findById(id);
     if (!user) {
-      throw new NotFoundException(`User với ID ${id} không tồn tại`);
+      throw new NotFoundException(`User with ID ${id} does not exist`);
     }
     return user;
   }
 
   /**
-   * Lấy user theo email
+   * Get user by email
    */
   async findByEmail(email: string): Promise<IUser> {
     const user = await this.usersRepository.findByEmail(email);
     if (!user) {
-      throw new NotFoundException(`User với email ${email} không tồn tại`);
+      throw new NotFoundException(`User with email ${email} does not exist`);
     }
     return user;
   }
 
   /**
-   * Cập nhật user
+   * Update user
    */
   async update(id: string, updateUserDto: UpdateUserDto): Promise<IUser> {
-    // Kiểm tra user có tồn tại
+    // Check if user exists
     const user = await this.usersRepository.findById(id);
     if (!user) {
-      throw new NotFoundException(`User với ID ${id} không tồn tại`);
+      throw new NotFoundException(`User with ID ${id} does not exist`);
     }
 
-    // Nếu thay đổi email, kiểm tra email mới có tồn tại
+    // If email is changed, check if new email already exists
     if (updateUserDto.email && updateUserDto.email !== user.email) {
       const emailExists = await this.usersRepository.emailExists(updateUserDto.email);
       if (emailExists) {
-        throw new BadRequestException('Email đã được đăng ký');
+        throw new BadRequestException('Email already registered');
       }
     }
 
@@ -72,12 +72,12 @@ export class UsersService {
   }
 
   /**
-   * Xóa user
+   * Delete user
    */
   async delete(id: string): Promise<void> {
     const deleted = await this.usersRepository.delete(id);
     if (!deleted) {
-      throw new NotFoundException(`User với ID ${id} không tồn tại`);
+      throw new NotFoundException(`User with ID ${id} does not exist`);
     }
   }
 }

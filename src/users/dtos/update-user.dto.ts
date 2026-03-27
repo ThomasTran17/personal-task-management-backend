@@ -3,38 +3,38 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class UpdateUserDto {
   @ApiProperty({
-    description: 'Email của user',
+    description: 'Email of the user',
     example: 'newemail@example.com',
     required: false,
   })
-  @IsEmail({}, { message: 'Email không hợp lệ' })
+  @IsEmail({}, { message: 'Invalid email format' })
   @IsOptional()
   email?: string;
 
   @ApiProperty({
-    description: 'Tên của user',
+    description: 'First name of the user',
     example: 'Jane',
     required: false,
   })
-  @IsString({ message: 'Tên phải là chuỗi' })
+  @IsString({ message: 'First name must be a string' })
   @IsOptional()
   firstName?: string;
 
   @ApiProperty({
-    description: 'Họ của user',
+    description: 'Last name of the user',
     example: 'Smith',
     required: false,
   })
-  @IsString({ message: 'Họ phải là chuỗi' })
+  @IsString({ message: 'Last name must be a string' })
   @IsOptional()
   lastName?: string;
 
   @ApiProperty({
-    description: 'URL ảnh đại diện của user',
+    description: 'Avatar URL of the user',
     example: 'https://example.com/new-avatar.jpg',
     required: false,
   })
-  @IsString({ message: 'Avatar phải là chuỗi' })
+  @IsString({ message: 'Avatar must be a string' })
   @IsOptional()
   avatar?: string;
 }

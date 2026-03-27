@@ -1,0 +1,13 @@
+{
+  "projects": {
+    "default": "personal-task-management-a0323"
+  },
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "functions": {
+    "source": "dist",
+    "runtime": "nodejs18"
+  }
+}

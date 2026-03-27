@@ -1,0 +1,14 @@
+{
+  "projects": {
+    "default": "personal-task-management-a0323"
+  },
+  "targets": {
+    "personal-task-management-a0323": {
+      "hosting": {
+        "default": [
+          "personal-task-management-a0323"
+        ]
+      }
+    }
+  }
+}
