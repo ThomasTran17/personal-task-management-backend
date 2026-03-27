@@ -28,14 +28,23 @@ export class AuthResponseDto {
   accessToken: string;
 
   @ApiProperty({
-    description: 'Refresh token for token renewal',
-    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
-  })
-  refreshToken: string;
-
-  @ApiProperty({
     description: 'User information',
     type: UserDto,
   })
   user: UserDto;
+
+  @ApiProperty({
+    description:
+      'Refresh token is set in HttpOnly cookie (not returned in body for security)',
+    example: 'HttpOnly Cookie: refreshToken',
+  })
+  message?: string;
+}
+
+export class RefreshAccessTokenDto {
+  @ApiProperty({
+    description: 'New access token',
+    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+  })
+  accessToken: string;
 }

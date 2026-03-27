@@ -1,18 +1,35 @@
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
+import cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const port = process.env.PORT || 3000;
+
+  // Enable cookie parsing
+  app.use(cookieParser());
+
+  // Enable CORS for cookie credentials
+  app.enableCors({
+    origin: process.env.CORS_ORIGIN || 'http://localhost:3001',
+    credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  });
 
   // Setup Swagger
   const config = new DocumentBuilder()
     .setTitle('Personal Task Management API')
     .setDescription('API for managing personal tasks')
     .setVersion('1.0')
+    .addTag('Authentication', 'Authentication endpoints')
     .addTag('users', 'User management endpoints')
     .addTag('tasks', 'Task management endpoints')
+    .addCookieAuth('refreshToken', {
+      type: 'http',
+      description: 'Refresh token stored in HttpOnly cookie',
+    })
+    .addBearerAuth()
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
