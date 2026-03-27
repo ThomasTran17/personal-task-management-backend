@@ -1,7 +1,4 @@
 {
-  "projects": {
-    "default": "personal-task-management-a0323"
-  },
   "firestore": {
     "rules": "firestore.rules",
     "indexes": "firestore.indexes.json"
