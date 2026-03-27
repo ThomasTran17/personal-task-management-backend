@@ -2,7 +2,7 @@
   "indexes": [
     {
       "collectionGroup": "users",
-      "queryScope": "Collection",
+      "queryScope": "COLLECTION",
       "fields": [
         {
           "fieldPath": "email",
