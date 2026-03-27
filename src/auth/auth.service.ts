@@ -8,7 +8,11 @@ import * as bcrypt from 'bcrypt';
 import { UsersService } from '../users/users.service';
 import { RegisterDto } from './dtos/register.dto';
 import { LoginDto } from './dtos/login.dto';
-import { AuthResponseDto, UserDto, RefreshAccessTokenDto } from './dtos/auth-response.dto';
+import {
+  AuthResponseDto,
+  UserDto,
+  RefreshAccessTokenDto,
+} from './dtos/auth-response.dto';
 import { IJwtPayload } from './interfaces/auth.interface';
 import { ConfigService } from '@nestjs/config';
 
@@ -35,7 +39,11 @@ export class AuthService {
   /**
    * Register a new user
    */
-  async register(registerDto: RegisterDto): Promise<{ authResponse: AuthResponseDto; cookieOptions: CookieOptions; refreshToken: string }> {
+  async register(registerDto: RegisterDto): Promise<{
+    authResponse: AuthResponseDto;
+    cookieOptions: CookieOptions;
+    refreshToken: string;
+  }> {
     // Check if email already exists
     try {
       await this.usersService.findByEmail(registerDto.email);
@@ -76,7 +84,11 @@ export class AuthService {
   /**
    * Login user
    */
-  async login(loginDto: LoginDto): Promise<{ authResponse: AuthResponseDto; cookieOptions: CookieOptions; refreshToken: string }> {
+  async login(loginDto: LoginDto): Promise<{
+    authResponse: AuthResponseDto;
+    cookieOptions: CookieOptions;
+    refreshToken: string;
+  }> {
     // Find user by email
     const user = await this.usersService.findByEmail(loginDto.email);
 
@@ -122,7 +134,9 @@ export class AuthService {
   /**
    * Refresh access token using refresh token from cookie
    */
-  async refreshAccessToken(refreshToken: string): Promise<RefreshAccessTokenDto> {
+  async refreshAccessToken(
+    refreshToken: string,
+  ): Promise<RefreshAccessTokenDto> {
     try {
       const payload = this.jwtService.verify(refreshToken, {
         secret: this.configService.get('JWT_REFRESH_SECRET'),

@@ -26,9 +26,7 @@ export class CookieUtils {
    * Get appropriate cookie options based on environment
    */
   static getCookieOptions(isProd: boolean, maxAge: number) {
-    const options = isProd
-      ? this.PROD_COOKIE_OPTIONS
-      : this.DEV_COOKIE_OPTIONS;
+    const options = isProd ? this.PROD_COOKIE_OPTIONS : this.DEV_COOKIE_OPTIONS;
 
     return {
       ...options,

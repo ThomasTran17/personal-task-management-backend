@@ -19,7 +19,10 @@ import { Response, Request } from 'express';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dtos/register.dto';
 import { LoginDto } from './dtos/login.dto';
-import { AuthResponseDto, RefreshAccessTokenDto } from './dtos/auth-response.dto';
+import {
+  AuthResponseDto,
+  RefreshAccessTokenDto,
+} from './dtos/auth-response.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @Controller('auth')
@@ -33,7 +36,8 @@ export class AuthController {
   @ApiBody({ type: RegisterDto })
   @ApiResponse({
     status: 201,
-    description: 'User registered successfully. Refresh token set in HttpOnly cookie.',
+    description:
+      'User registered successfully. Refresh token set in HttpOnly cookie.',
     type: AuthResponseDto,
   })
   @ApiResponse({
@@ -59,7 +63,8 @@ export class AuthController {
   @ApiBody({ type: LoginDto })
   @ApiResponse({
     status: 200,
-    description: 'User logged in successfully. Refresh token set in HttpOnly cookie.',
+    description:
+      'User logged in successfully. Refresh token set in HttpOnly cookie.',
     type: AuthResponseDto,
   })
   @ApiResponse({
@@ -117,7 +122,9 @@ export class AuthController {
     status: 200,
     description: 'User logged out successfully',
   })
-  async logout(@Res({ passthrough: true }) response: Response): Promise<{ message: string }> {
+  async logout(
+    @Res({ passthrough: true }) response: Response,
+  ): Promise<{ message: string }> {
     // Clear refresh token cookie
     response.clearCookie('refreshToken', {
       httpOnly: true,

@@ -25,11 +25,15 @@ async function bootstrap() {
     .addTag('Authentication', 'Authentication endpoints')
     .addTag('users', 'User management endpoints')
     .addTag('tasks', 'Task management endpoints')
-    .addCookieAuth('refreshToken', {
-      type: 'http',
-      description: 'Refresh token stored in HttpOnly cookie',
-    })
-    .addBearerAuth()
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        description: 'Access token for authenticated requests',
+      },
+      'access-token',
+    )
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
