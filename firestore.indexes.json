@@ -12,7 +12,7 @@
     },
     {
       "collectionGroup": "tasks",
-      "queryScope": "Collection",
+      "queryScope": "COLLECTION",
       "fields": [
         {
           "fieldPath": "userId",
