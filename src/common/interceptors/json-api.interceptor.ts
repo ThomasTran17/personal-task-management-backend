@@ -24,10 +24,12 @@ export class JsonApiInterceptor implements NestInterceptor {
   ): Observable<JsonApiResponse> {
     return next.handle().pipe(
       map((data: unknown) => {
-        // Get resource type from decorator or default to 'resource'
+        // Get resource type from decorator (check both method and class level)
         const resourceType =
-          this.reflector.get<string>(RESOURCE_TYPE_KEY, context.getHandler()) ||
-          'resource';
+          this.reflector.getAllAndOverride<string>(RESOURCE_TYPE_KEY, [
+            context.getHandler(),
+            context.getClass(),
+          ]) || 'resource';
 
         // If data is null/undefined, return immediately
         if (!data) {

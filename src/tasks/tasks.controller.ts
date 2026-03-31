@@ -95,7 +95,7 @@ export class TasksController {
   @Get('stats/summary')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get task statistics' })
-  @ApiJsonApiResponse(MessageResponseDto, 'resource', 200, false, false)
+  @ApiJsonApiResponse(MessageResponseDto, 'tasks', 200, false, false)
   @ApiJsonApiError(401, 'Unauthorized')
   async getStatistics(@CurrentUser() user: IUser) {
     return await this.tasksService.getStatistics(user.id);
@@ -158,7 +158,7 @@ export class TasksController {
     description: 'Task ID',
     example: 'task-123',
   })
-  @ApiJsonApiResponse(MessageResponseDto, 'resource', 200, false, false)
+  @ApiJsonApiResponse(MessageResponseDto, 'tasks', 200, false, false)
   @ApiJsonApiError(404, 'Task not found')
   @ApiJsonApiError(403, 'Permission denied')
   @ApiJsonApiError(401, 'Unauthorized')

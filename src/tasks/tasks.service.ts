@@ -21,14 +21,16 @@ export class TasksService {
       throw new BadRequestException('User ID is required');
     }
 
-    return await this.tasksRepository.create(userId, createTaskDto);
+    const task = await this.tasksRepository.create(userId, createTaskDto);
+    return this.mapTimestampsToIso(task);
   }
 
   /**
    * Get all tasks for the user
    */
   async findAll(userId: string): Promise<ITask[]> {
-    return await this.tasksRepository.findByUserId(userId);
+    const tasks = await this.tasksRepository.findByUserId(userId);
+    return tasks.map((task) => this.mapTimestampsToIso(task));
   }
 
   /**
@@ -39,7 +41,7 @@ export class TasksService {
     if (!task) {
       throw new NotFoundException(`Task with ID ${taskId} does not exist`);
     }
-    return task;
+    return this.mapTimestampsToIso(task);
   }
 
   /**
@@ -61,7 +63,11 @@ export class TasksService {
    * Get all tasks for user by status
    */
   async findByStatus(userId: string, status: TaskStatus): Promise<ITask[]> {
-    return await this.tasksRepository.findByUserIdAndStatus(userId, status);
+    const tasks = await this.tasksRepository.findByUserIdAndStatus(
+      userId,
+      status,
+    );
+    return tasks.map((task) => this.mapTimestampsToIso(task));
   }
 
   /**
@@ -71,7 +77,11 @@ export class TasksService {
     userId: string,
     priority: TaskPriority,
   ): Promise<ITask[]> {
-    return await this.tasksRepository.findByUserIdAndPriority(userId, priority);
+    const tasks = await this.tasksRepository.findByUserIdAndPriority(
+      userId,
+      priority,
+    );
+    return tasks.map((task) => this.mapTimestampsToIso(task));
   }
 
   /**
@@ -85,7 +95,8 @@ export class TasksService {
     // Check if task exists and belongs to user
     await this.findOneByUser(taskId, userId);
 
-    return await this.tasksRepository.update(taskId, updateTaskDto);
+    const updated = await this.tasksRepository.update(taskId, updateTaskDto);
+    return this.mapTimestampsToIso(updated);
   }
 
   /**
@@ -119,5 +130,50 @@ export class TasksService {
         .length,
       done: allTasks.filter((t) => t.status === TaskStatus.DONE).length,
     };
+  }
+
+  /**
+   * Convert Firebase Timestamps to ISO strings
+   */
+  private mapTimestampsToIso(task: ITask): ITask {
+    return {
+      ...task,
+      dueDate: task.dueDate
+        ? this.convertTimestampToDate(task.dueDate)
+        : undefined,
+      createdAt: task.createdAt
+        ? this.convertTimestampToDate(task.createdAt)
+        : undefined,
+      updatedAt: task.updatedAt
+        ? this.convertTimestampToDate(task.updatedAt)
+        : undefined,
+    };
+  }
+
+  /**
+   * Convert Firebase Timestamp object to ISO string date
+   */
+  private convertTimestampToDate(timestamp: unknown): Date {
+    if (!timestamp) {
+      return new Date();
+    }
+
+    // If it's already a Date, return it
+    if (timestamp instanceof Date) {
+      return timestamp;
+    }
+
+    // If it's a Firebase Timestamp object with _seconds and _nanoseconds
+    const ts = timestamp as Record<string, unknown>;
+    if (ts._seconds && typeof ts._seconds === 'number') {
+      return new Date(ts._seconds * 1000);
+    }
+
+    // If it's a number (milliseconds)
+    if (typeof timestamp === 'number') {
+      return new Date(timestamp);
+    }
+
+    return new Date();
   }
 }
