@@ -152,7 +152,10 @@ export class AuthService {
         },
       );
 
-      return { accessToken: newAccessToken };
+      return {
+        accessToken: newAccessToken,
+        user: this.mapUserToDto(user),
+      };
     } catch (error) {
       throw new UnauthorizedException('Invalid refresh token');
     }

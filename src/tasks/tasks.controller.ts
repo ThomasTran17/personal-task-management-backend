@@ -14,7 +14,6 @@ import {
 import {
   ApiTags,
   ApiOperation,
-  ApiResponse,
   ApiBearerAuth,
   ApiParam,
   ApiQuery,
@@ -23,15 +22,20 @@ import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dtos/create-task.dto';
 import { UpdateTaskDto } from './dtos/update-task.dto';
 import { TaskResponseDto } from './dtos/task-response.dto';
+import { MessageResponseDto } from './dtos/message-response.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { IUser } from '../users/interfaces/user.interface';
 import { TaskStatus, TaskPriority } from './interfaces/task.interface';
+import { Resource } from '../common/decorators/resource.decorator';
+import { ApiJsonApiResponse } from '../common/decorators/api-json-api-response.decorator';
+import { ApiJsonApiError } from '../common/decorators/api-json-api-error.decorator';
 
 @Controller('tasks')
 @ApiTags('Tasks')
 @ApiBearerAuth('access-token')
 @UseGuards(JwtAuthGuard)
+@Resource('tasks')
 export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
 
@@ -41,15 +45,9 @@ export class TasksController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Create a new task' })
-  @ApiResponse({
-    status: 201,
-    description: 'Task created successfully',
-    type: TaskResponseDto,
-  })
-  @ApiResponse({
-    status: 400,
-    description: 'Invalid task data',
-  })
+  @ApiJsonApiResponse(TaskResponseDto, 'tasks', 201)
+  @ApiJsonApiError(400, 'Invalid task data')
+  @ApiJsonApiError(401, 'Unauthorized')
   async create(
     @Body() createTaskDto: CreateTaskDto,
     @CurrentUser() user: IUser,
@@ -75,11 +73,8 @@ export class TasksController {
     required: false,
     description: 'Filter by task priority',
   })
-  @ApiResponse({
-    status: 200,
-    description: 'List of tasks',
-    type: [TaskResponseDto],
-  })
+  @ApiJsonApiResponse(TaskResponseDto, 'tasks', 200, false, true)
+  @ApiJsonApiError(401, 'Unauthorized')
   async findAll(
     @CurrentUser() user: IUser,
     @Query('status') status?: TaskStatus,
@@ -100,18 +95,8 @@ export class TasksController {
   @Get('stats/summary')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get task statistics' })
-  @ApiResponse({
-    status: 200,
-    description: 'Task statistics',
-    schema: {
-      properties: {
-        total: { type: 'number' },
-        todo: { type: 'number' },
-        inProgress: { type: 'number' },
-        done: { type: 'number' },
-      },
-    },
-  })
+  @ApiJsonApiResponse(MessageResponseDto, 'resource', 200, false, false)
+  @ApiJsonApiError(401, 'Unauthorized')
   async getStatistics(@CurrentUser() user: IUser) {
     return await this.tasksService.getStatistics(user.id);
   }
@@ -127,19 +112,10 @@ export class TasksController {
     description: 'Task ID',
     example: 'task-123',
   })
-  @ApiResponse({
-    status: 200,
-    description: 'Task found',
-    type: TaskResponseDto,
-  })
-  @ApiResponse({
-    status: 404,
-    description: 'Task not found',
-  })
-  @ApiResponse({
-    status: 403,
-    description: 'Permission denied',
-  })
+  @ApiJsonApiResponse(TaskResponseDto, 'tasks')
+  @ApiJsonApiError(404, 'Task not found')
+  @ApiJsonApiError(403, 'Permission denied')
+  @ApiJsonApiError(401, 'Unauthorized')
   async findOne(
     @Param('id') id: string,
     @CurrentUser() user: IUser,
@@ -158,19 +134,11 @@ export class TasksController {
     description: 'Task ID',
     example: 'task-123',
   })
-  @ApiResponse({
-    status: 200,
-    description: 'Task updated successfully',
-    type: TaskResponseDto,
-  })
-  @ApiResponse({
-    status: 404,
-    description: 'Task not found',
-  })
-  @ApiResponse({
-    status: 403,
-    description: 'Permission denied',
-  })
+  @ApiJsonApiResponse(TaskResponseDto, 'tasks')
+  @ApiJsonApiError(404, 'Task not found')
+  @ApiJsonApiError(403, 'Permission denied')
+  @ApiJsonApiError(400, 'Invalid task data')
+  @ApiJsonApiError(401, 'Unauthorized')
   async update(
     @Param('id') id: string,
     @Body() updateTaskDto: UpdateTaskDto,
@@ -190,18 +158,10 @@ export class TasksController {
     description: 'Task ID',
     example: 'task-123',
   })
-  @ApiResponse({
-    status: 200,
-    description: 'Task deleted successfully',
-  })
-  @ApiResponse({
-    status: 404,
-    description: 'Task not found',
-  })
-  @ApiResponse({
-    status: 403,
-    description: 'Permission denied',
-  })
+  @ApiJsonApiResponse(MessageResponseDto, 'resource', 200, false, false)
+  @ApiJsonApiError(404, 'Task not found')
+  @ApiJsonApiError(403, 'Permission denied')
+  @ApiJsonApiError(401, 'Unauthorized')
   async delete(
     @Param('id') id: string,
     @CurrentUser() user: IUser,

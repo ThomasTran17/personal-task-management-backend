@@ -8,13 +8,7 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
-  ApiBody,
-  ApiCookieAuth,
-} from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiCookieAuth } from '@nestjs/swagger';
 import { Response, Request } from 'express';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dtos/register.dto';
@@ -23,7 +17,11 @@ import {
   AuthResponseDto,
   RefreshAccessTokenDto,
 } from './dtos/auth-response.dto';
+import { LogoutResponseDto } from './dtos/logout-response.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { ApiJsonApiResponse } from '../common/decorators/api-json-api-response.decorator';
+import { ApiJsonApiError } from '../common/decorators/api-json-api-error.decorator';
+import { Resource } from '../common/decorators/resource.decorator';
 
 @Controller('auth')
 @ApiTags('Authentication')
@@ -31,60 +29,55 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('register')
+  @Resource('auth')
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Register a new user' })
-  @ApiBody({ type: RegisterDto })
-  @ApiResponse({
-    status: 201,
-    description:
-      'User registered successfully. Refresh token set in HttpOnly cookie.',
-    type: AuthResponseDto,
-  })
-  @ApiResponse({
-    status: 400,
-    description: 'Email already registered or invalid data',
-  })
+  @ApiJsonApiResponse(AuthResponseDto, 'auth', 201, true)
+  @ApiJsonApiError(400, 'Email already registered or invalid data')
+  @ApiJsonApiError(422, 'Validation error')
   async register(
     @Body() registerDto: RegisterDto,
     @Res({ passthrough: true }) response: Response,
-  ): Promise<AuthResponseDto> {
+  ): Promise<unknown> {
     const { authResponse, cookieOptions, refreshToken } =
       await this.authService.register(registerDto);
 
     // Set refresh token in HttpOnly cookie
     response.cookie('refreshToken', refreshToken, cookieOptions);
 
-    return authResponse;
+    // Return structure: { data: user (only), accessToken }
+    return {
+      data: authResponse.user,
+      accessToken: authResponse.accessToken,
+    };
   }
 
   @Post('login')
+  @Resource('auth')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Login user' })
-  @ApiBody({ type: LoginDto })
-  @ApiResponse({
-    status: 200,
-    description:
-      'User logged in successfully. Refresh token set in HttpOnly cookie.',
-    type: AuthResponseDto,
-  })
-  @ApiResponse({
-    status: 401,
-    description: 'Invalid email or password',
-  })
+  @ApiJsonApiResponse(AuthResponseDto, 'auth', 200, true)
+  @ApiJsonApiError(401, 'Invalid email or password')
+  @ApiJsonApiError(422, 'Validation error')
   async login(
     @Body() loginDto: LoginDto,
     @Res({ passthrough: true }) response: Response,
-  ): Promise<AuthResponseDto> {
+  ): Promise<unknown> {
     const { authResponse, cookieOptions, refreshToken } =
       await this.authService.login(loginDto);
 
     // Set refresh token in HttpOnly cookie
     response.cookie('refreshToken', refreshToken, cookieOptions);
 
-    return authResponse;
+    // Return structure: { data: user (only), accessToken }
+    return {
+      data: authResponse.user,
+      accessToken: authResponse.accessToken,
+    };
   }
 
   @Post('refresh')
+  @Resource('auth')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Refresh access token',
@@ -92,36 +85,32 @@ export class AuthController {
       'Uses the refresh token stored in HttpOnly cookie to generate a new access token',
   })
   @ApiCookieAuth('refreshToken')
-  @ApiResponse({
-    status: 200,
-    description: 'Access token refreshed successfully',
-    type: RefreshAccessTokenDto,
-  })
-  @ApiResponse({
-    status: 401,
-    description: 'Invalid or missing refresh token',
-  })
-  async refreshAccessToken(
-    @Req() request: Request,
-  ): Promise<RefreshAccessTokenDto> {
+  @ApiJsonApiResponse(RefreshAccessTokenDto, 'auth', 200, true)
+  @ApiJsonApiError(401, 'Invalid or missing refresh token')
+  async refreshAccessToken(@Req() request: Request): Promise<unknown> {
     const refreshToken = request.cookies['refreshToken'];
 
     if (!refreshToken) {
       throw new Error('Refresh token not found in cookies');
     }
 
-    return await this.authService.refreshAccessToken(refreshToken);
+    const result = await this.authService.refreshAccessToken(refreshToken);
+
+    // Return structure: { data: user (only), accessToken }
+    return {
+      data: result.user,
+      accessToken: result.accessToken,
+    };
   }
 
   @Post('logout')
+  @Resource('resource')
   @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Logout user' })
   @ApiCookieAuth('refreshToken')
-  @ApiResponse({
-    status: 200,
-    description: 'User logged out successfully',
-  })
+  @ApiJsonApiResponse(LogoutResponseDto, 'resource', 200, false)
+  @ApiJsonApiError(401, 'Unauthorized')
   async logout(
     @Res({ passthrough: true }) response: Response,
   ): Promise<{ message: string }> {

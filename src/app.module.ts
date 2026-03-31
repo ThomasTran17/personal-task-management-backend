@@ -5,6 +5,7 @@ import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { TasksModule } from './tasks/tasks.module';
+import { CommonModule } from './common/common.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { TasksModule } from './tasks/tasks.module';
       isGlobal: true,
       envFilePath: '.env',
     }),
+    CommonModule,
     UsersModule,
     AuthModule,
     TasksModule,

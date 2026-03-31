@@ -47,4 +47,10 @@ export class RefreshAccessTokenDto {
     example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
   })
   accessToken: string;
+
+  @ApiProperty({
+    description: 'User information',
+    type: UserDto,
+  })
+  user: UserDto;
 }

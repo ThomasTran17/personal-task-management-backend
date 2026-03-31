@@ -17,6 +17,9 @@ async function bootstrap() {
     allowedHeaders: ['Content-Type', 'Authorization'],
   });
 
+  // Global exception filter and interceptor are registered via CommonModule
+  // using APP_FILTER and APP_INTERCEPTOR tokens
+
   // Setup Swagger
   const config = new DocumentBuilder()
     .setTitle('Personal Task Management API')
