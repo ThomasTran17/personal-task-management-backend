@@ -177,8 +177,8 @@ function generateAttributesExample(
     attributes.userId = 'user-id-456';
     attributes.title = 'Sample Task';
     attributes.description = 'This is a sample task description';
-    attributes.status = 'todo';
-    attributes.priority = 'high';
+    attributes.status = 'TODO';
+    attributes.priority = 'HIGH';
     attributes.dueDate = '2024-02-15T18:00:00Z';
     attributes.createdAt = '2024-01-15T10:30:00Z';
     attributes.updatedAt = '2024-01-15T10:30:00Z';

@@ -18,15 +18,16 @@ export class TasksRepository {
       id: taskRef.id,
       userId,
       title: createTaskDto.title,
-      description: createTaskDto.description,
+      description: createTaskDto.description || "",
       status: createTaskDto.status || TaskStatus.TODO,
       priority: createTaskDto.priority || TaskPriority.MEDIUM,
-      dueDate: createTaskDto.dueDate
-        ? new Date(createTaskDto.dueDate)
-        : undefined,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
+
+    if (createTaskDto.dueDate) {
+      task.dueDate = new Date(createTaskDto.dueDate);
+    }
 
     await taskRef.set(task);
     return task;
