@@ -14,22 +14,73 @@ export class TasksService {
   constructor(private readonly tasksRepository: TasksRepository) {}
 
   /**
-   * Create a new task for the user
+   * Create a new primary task for the user
    */
-  async create(userId: string, createTaskDto: CreateTaskDto): Promise<ITask> {
-    if (!userId) {
-      throw new BadRequestException('User ID is required');
+  async create(ownerId: string, createTaskDto: CreateTaskDto): Promise<ITask> {
+    if (!ownerId) {
+      throw new BadRequestException('Owner ID is required');
     }
 
-    const task = await this.tasksRepository.create(userId, createTaskDto);
+    const task = await this.tasksRepository.create(ownerId, createTaskDto);
     return this.mapTimestampsToIso(task);
+  }
+
+  /**
+   * Create a subtask for a parent task
+   */
+  async createSubtask(
+    ownerId: string,
+    parentId: string,
+    createTaskDto: CreateTaskDto,
+  ): Promise<ITask> {
+    if (!ownerId) {
+      throw new BadRequestException('Owner ID is required');
+    }
+
+    if (!parentId) {
+      throw new BadRequestException('Parent ID is required');
+    }
+
+    // Verify parent task exists and belongs to user
+    const parentTask = await this.findOneByOwner(parentId, ownerId);
+    if (!parentTask) {
+      throw new NotFoundException('Parent task not found');
+    }
+
+    try {
+      const task = await this.tasksRepository.createSubtask(
+        ownerId,
+        createTaskDto,
+        parentId,
+      );
+      return this.mapTimestampsToIso(task);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      throw new BadRequestException(message);
+    }
+  }
+
+  /**
+   * Get all primary tasks for the user
+   */
+  async getPrimaryTasks(ownerId: string): Promise<ITask[]> {
+    const tasks = await this.tasksRepository.getPrimaryTasks(ownerId);
+    return tasks.map((task) => this.mapTimestampsToIso(task));
+  }
+
+  /**
+   * Get all subtasks for a parent task
+   */
+  async getSubtasksByParentId(parentId: string): Promise<ITask[]> {
+    const tasks = await this.tasksRepository.getSubtasksByParentId(parentId);
+    return tasks.map((task) => this.mapTimestampsToIso(task));
   }
 
   /**
    * Get all tasks for the user
    */
-  async findAll(userId: string): Promise<ITask[]> {
-    const tasks = await this.tasksRepository.findByUserId(userId);
+  async findAll(ownerId: string): Promise<ITask[]> {
+    const tasks = await this.tasksRepository.findByOwnerId(ownerId);
     return tasks.map((task) => this.mapTimestampsToIso(task));
   }
 
@@ -47,10 +98,10 @@ export class TasksService {
   /**
    * Get task by ID and verify ownership
    */
-  async findOneByUser(taskId: string, userId: string): Promise<ITask> {
+  async findOneByOwner(taskId: string, ownerId: string): Promise<ITask> {
     const task = await this.findOne(taskId);
 
-    if (task.userId !== userId) {
+    if (task.ownerId !== ownerId) {
       throw new ForbiddenException(
         'You do not have permission to access this task',
       );
@@ -62,9 +113,9 @@ export class TasksService {
   /**
    * Get all tasks for user by status
    */
-  async findByStatus(userId: string, status: TaskStatus): Promise<ITask[]> {
-    const tasks = await this.tasksRepository.findByUserIdAndStatus(
-      userId,
+  async findByStatus(ownerId: string, status: TaskStatus): Promise<ITask[]> {
+    const tasks = await this.tasksRepository.findByOwnerIdAndStatus(
+      ownerId,
       status,
     );
     return tasks.map((task) => this.mapTimestampsToIso(task));
@@ -74,11 +125,11 @@ export class TasksService {
    * Get all tasks for user by priority
    */
   async findByPriority(
-    userId: string,
+    ownerId: string,
     priority: TaskPriority,
   ): Promise<ITask[]> {
-    const tasks = await this.tasksRepository.findByUserIdAndPriority(
-      userId,
+    const tasks = await this.tasksRepository.findByOwnerIdAndPriority(
+      ownerId,
       priority,
     );
     return tasks.map((task) => this.mapTimestampsToIso(task));
@@ -89,22 +140,22 @@ export class TasksService {
    */
   async update(
     taskId: string,
-    userId: string,
+    ownerId: string,
     updateTaskDto: UpdateTaskDto,
   ): Promise<ITask> {
     // Check if task exists and belongs to user
-    await this.findOneByUser(taskId, userId);
+    await this.findOneByOwner(taskId, ownerId);
 
     const updated = await this.tasksRepository.update(taskId, updateTaskDto);
     return this.mapTimestampsToIso(updated);
   }
 
   /**
-   * Delete task
+   * Delete task (cascade deletes all subtasks)
    */
-  async delete(taskId: string, userId: string): Promise<void> {
+  async delete(taskId: string, ownerId: string): Promise<void> {
     // Check if task exists and belongs to user
-    await this.findOneByUser(taskId, userId);
+    await this.findOneByOwner(taskId, ownerId);
 
     const deleted = await this.tasksRepository.delete(taskId);
     if (!deleted) {
@@ -115,13 +166,13 @@ export class TasksService {
   /**
    * Get task statistics for user
    */
-  async getStatistics(userId: string): Promise<{
+  async getStatistics(ownerId: string): Promise<{
     total: number;
     todo: number;
     inProgress: number;
     done: number;
   }> {
-    const allTasks = await this.findAll(userId);
+    const allTasks = await this.findAll(ownerId);
 
     return {
       total: allTasks.length,
@@ -143,15 +194,15 @@ export class TasksService {
         : undefined,
       createdAt: task.createdAt
         ? this.convertTimestampToDate(task.createdAt)
-        : undefined,
+        : new Date(),
       updatedAt: task.updatedAt
         ? this.convertTimestampToDate(task.updatedAt)
-        : undefined,
+        : new Date(),
     };
   }
 
   /**
-   * Convert Firebase Timestamp object to ISO string date
+   * Convert Firebase Timestamp object to Date
    */
   private convertTimestampToDate(timestamp: unknown): Date {
     if (!timestamp) {

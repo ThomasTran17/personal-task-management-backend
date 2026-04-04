@@ -12,12 +12,14 @@ export enum TaskPriority {
 
 export interface ITask {
   id: string;
-  userId: string;
   title: string;
   description?: string;
+  ownerId: string;
   status: TaskStatus;
   priority: TaskPriority;
+  participantIds: string[];
   dueDate?: Date;
-  createdAt?: Date;
-  updatedAt?: Date;
+  createdAt: Date;
+  updatedAt: Date;
+  parentId: string | null;
 }

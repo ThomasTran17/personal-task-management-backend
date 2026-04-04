@@ -4,6 +4,7 @@ import {
   IsOptional,
   IsEnum,
   IsDateString,
+  IsArray,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { TaskStatus, TaskPriority } from '../interfaces/task.interface';
@@ -51,6 +52,15 @@ export class CreateTaskDto {
   priority?: TaskPriority;
 
   @ApiProperty({
+    description: 'List of participant IDs',
+    example: ['user-1', 'user-2'],
+    required: false,
+  })
+  @IsArray({ message: 'Participant IDs must be an array' })
+  @IsOptional()
+  participantIds?: string[];
+
+  @ApiProperty({
     description: 'Due date of the task',
     example: '2026-12-31',
     required: false,
@@ -58,4 +68,14 @@ export class CreateTaskDto {
   @IsDateString({}, { message: 'Due date must be a valid ISO date string' })
   @IsOptional()
   dueDate?: string;
+
+  @ApiProperty({
+    description: 'Parent task ID for subtasks (null for primary tasks)',
+    example: 'task-parent-id',
+    required: false,
+    nullable: true,
+  })
+  @IsString({ message: 'Parent ID must be a string' })
+  @IsOptional()
+  parentId?: string | null;
 }

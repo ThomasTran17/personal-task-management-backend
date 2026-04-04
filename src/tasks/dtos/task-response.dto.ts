@@ -6,7 +6,7 @@ export class TaskResponseDto {
   id: string;
 
   @ApiProperty()
-  userId: string;
+  ownerId: string;
 
   @ApiProperty()
   title: string;
@@ -20,12 +20,18 @@ export class TaskResponseDto {
   @ApiProperty({ enum: TaskPriority })
   priority: TaskPriority;
 
+  @ApiProperty({ type: [String], required: false })
+  participantIds: string[];
+
   @ApiProperty({ required: false })
   dueDate?: Date;
 
   @ApiProperty()
-  createdAt?: Date;
+  createdAt: Date;
 
   @ApiProperty()
-  updatedAt?: Date;
+  updatedAt: Date;
+
+  @ApiProperty({ nullable: true, required: false })
+  parentId: string | null;
 }

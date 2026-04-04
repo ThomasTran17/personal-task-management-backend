@@ -40,11 +40,11 @@ export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
 
   /**
-   * Create a new task
+   * Create a new primary task
    */
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Create a new task' })
+  @ApiOperation({ summary: 'Create a new primary task' })
   @ApiJsonApiResponse(TaskResponseDto, 'tasks', 201)
   @ApiJsonApiError(400, 'Invalid task data')
   @ApiJsonApiError(401, 'Unauthorized')
@@ -53,6 +53,64 @@ export class TasksController {
     @CurrentUser() user: IUser,
   ): Promise<TaskResponseDto> {
     return await this.tasksService.create(user.id, createTaskDto);
+  }
+
+  /**
+   * Create a subtask for a parent task
+   */
+  @Post(':parentId/subtasks')
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Create a subtask for a parent task' })
+  @ApiParam({
+    name: 'parentId',
+    description: 'Parent task ID',
+    example: 'task-parent-id',
+  })
+  @ApiJsonApiResponse(TaskResponseDto, 'tasks', 201)
+  @ApiJsonApiError(400, 'Invalid subtask data or invalid parent')
+  @ApiJsonApiError(404, 'Parent task not found')
+  @ApiJsonApiError(403, 'Permission denied')
+  @ApiJsonApiError(401, 'Unauthorized')
+  async createSubtask(
+    @Param('parentId') parentId: string,
+    @Body() createTaskDto: CreateTaskDto,
+    @CurrentUser() user: IUser,
+  ): Promise<TaskResponseDto> {
+    return await this.tasksService.createSubtask(user.id, parentId, createTaskDto);
+  }
+
+  /**
+   * Get all primary tasks for the current user
+   */
+  @Get('primary')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get all primary tasks for the current user' })
+  @ApiJsonApiResponse(TaskResponseDto, 'tasks', 200, false, true)
+  @ApiJsonApiError(401, 'Unauthorized')
+  async getPrimaryTasks(
+    @CurrentUser() user: IUser,
+  ): Promise<TaskResponseDto[]> {
+    return await this.tasksService.getPrimaryTasks(user.id);
+  }
+
+  /**
+   * Get all subtasks for a parent task
+   */
+  @Get(':parentId/subtasks')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get all subtasks for a parent task' })
+  @ApiParam({
+    name: 'parentId',
+    description: 'Parent task ID',
+    example: 'task-parent-id',
+  })
+  @ApiJsonApiResponse(TaskResponseDto, 'tasks', 200, false, true)
+  @ApiJsonApiError(404, 'Parent task not found')
+  @ApiJsonApiError(401, 'Unauthorized')
+  async getSubtasks(
+    @Param('parentId') parentId: string,
+  ): Promise<TaskResponseDto[]> {
+    return await this.tasksService.getSubtasksByParentId(parentId);
   }
 
   /**
@@ -120,7 +178,7 @@ export class TasksController {
     @Param('id') id: string,
     @CurrentUser() user: IUser,
   ): Promise<TaskResponseDto> {
-    return await this.tasksService.findOneByUser(id, user.id);
+    return await this.tasksService.findOneByOwner(id, user.id);
   }
 
   /**
@@ -148,11 +206,11 @@ export class TasksController {
   }
 
   /**
-   * Delete a task
+   * Delete a task (cascade deletes all subtasks)
    */
   @Delete(':id')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Delete a task' })
+  @ApiOperation({ summary: 'Delete a task (cascade deletes all subtasks)' })
   @ApiParam({
     name: 'id',
     description: 'Task ID',

@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsEnum, IsDateString } from 'class-validator';
+import { IsString, IsOptional, IsEnum, IsDateString, IsArray } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { TaskStatus, TaskPriority } from '../interfaces/task.interface';
 
@@ -44,6 +44,15 @@ export class UpdateTaskDto {
   })
   @IsOptional()
   priority?: TaskPriority;
+
+  @ApiProperty({
+    description: 'List of participant IDs',
+    example: ['user-1', 'user-2'],
+    required: false,
+  })
+  @IsArray({ message: 'Participant IDs must be an array' })
+  @IsOptional()
+  participantIds?: string[];
 
   @ApiProperty({
     description: 'Due date of the task',
