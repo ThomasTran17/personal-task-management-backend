@@ -76,7 +76,11 @@ export class TasksController {
     @Body() createTaskDto: CreateTaskDto,
     @CurrentUser() user: IUser,
   ): Promise<TaskResponseDto> {
-    return await this.tasksService.createSubtask(user.id, parentId, createTaskDto);
+    return await this.tasksService.createSubtask(
+      user.id,
+      parentId,
+      createTaskDto,
+    );
   }
 
   /**

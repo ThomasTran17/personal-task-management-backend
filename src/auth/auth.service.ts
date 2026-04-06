@@ -14,6 +14,7 @@ import {
   RefreshAccessTokenDto,
 } from './dtos/auth-response.dto';
 import { IJwtPayload } from './interfaces/auth.interface';
+import { IUser } from '../users/interfaces/user.interface';
 import { ConfigService } from '@nestjs/config';
 
 interface TokenPair {
@@ -122,7 +123,7 @@ export class AuthService {
   /**
    * Validate JWT token and return user
    */
-  async validateToken(token: string): Promise<any> {
+  async validateToken(token: string): Promise<IJwtPayload> {
     try {
       const payload = this.jwtService.verify(token);
       return payload;
@@ -164,7 +165,7 @@ export class AuthService {
   /**
    * Generate access and refresh tokens
    */
-  private generateTokens(user: any): TokenPair {
+  private generateTokens(user: IUser): TokenPair {
     const payload: IJwtPayload = {
       id: user.id,
       email: user.email,
@@ -230,7 +231,7 @@ export class AuthService {
   /**
    * Map user to DTO (exclude password)
    */
-  private mapUserToDto(user: any): UserDto {
+  private mapUserToDto(user: IUser): UserDto {
     const userDto = new UserDto();
     userDto.id = user.id;
     userDto.email = user.email;

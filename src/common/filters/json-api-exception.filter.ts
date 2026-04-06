@@ -42,7 +42,10 @@ export class JsonApiExceptionFilter implements ExceptionFilter {
       (exception as unknown as Record<string, unknown>).code
     ) {
       const firebaseError = exception as unknown as FirebaseError;
-      const errorCode = (typeof firebaseError.code === 'string' ? firebaseError.code : 'unknown') || 'unknown';
+      const errorCode =
+        (typeof firebaseError.code === 'string'
+          ? firebaseError.code
+          : 'unknown') || 'unknown';
 
       // Map Firebase error codes to HTTP status codes
       const firebaseStatusMap: Record<string, number> = {
