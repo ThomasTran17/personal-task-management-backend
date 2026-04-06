@@ -22,4 +22,5 @@ export interface ITask {
   createdAt: Date;
   updatedAt: Date;
   parentId: string | null;
+  subtasks?: ITask[];
 }

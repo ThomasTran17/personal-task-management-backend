@@ -34,4 +34,7 @@ export class TaskResponseDto {
 
   @ApiProperty({ nullable: true, required: false })
   parentId: string | null;
+
+  @ApiProperty({ type: [TaskResponseDto], required: false })
+  subtasks?: TaskResponseDto[];
 }

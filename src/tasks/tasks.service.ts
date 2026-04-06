@@ -65,7 +65,7 @@ export class TasksService {
    */
   async getPrimaryTasks(ownerId: string): Promise<ITask[]> {
     const tasks = await this.tasksRepository.getPrimaryTasks(ownerId);
-    return tasks.map((task) => this.mapTimestampsToIso(task));
+    return Promise.all(tasks.map((task) => this.loadSubtasksForTask(task)));
   }
 
   /**
@@ -81,7 +81,7 @@ export class TasksService {
    */
   async findAll(ownerId: string): Promise<ITask[]> {
     const tasks = await this.tasksRepository.findByOwnerId(ownerId);
-    return tasks.map((task) => this.mapTimestampsToIso(task));
+    return Promise.all(tasks.map((task) => this.loadSubtasksForTask(task)));
   }
 
   /**
@@ -118,7 +118,7 @@ export class TasksService {
       ownerId,
       status,
     );
-    return tasks.map((task) => this.mapTimestampsToIso(task));
+    return Promise.all(tasks.map((task) => this.loadSubtasksForTask(task)));
   }
 
   /**
@@ -132,7 +132,7 @@ export class TasksService {
       ownerId,
       priority,
     );
-    return tasks.map((task) => this.mapTimestampsToIso(task));
+    return Promise.all(tasks.map((task) => this.loadSubtasksForTask(task)));
   }
 
   /**
@@ -226,5 +226,22 @@ export class TasksService {
     }
 
     return new Date();
+  }
+
+  /**
+   * Load subtasks for a task
+   */
+  private async loadSubtasksForTask(task: ITask): Promise<ITask> {
+    const mapped = this.mapTimestampsToIso(task);
+
+    // Only load subtasks for primary tasks (parentId is null)
+    if (task.parentId === null) {
+      const subtasks = await this.tasksRepository.getSubtasksByParentId(
+        task.id,
+      );
+      mapped.subtasks = subtasks.map((st) => this.mapTimestampsToIso(st));
+    }
+
+    return mapped;
   }
 }
