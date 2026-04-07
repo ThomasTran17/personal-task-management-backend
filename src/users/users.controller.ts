@@ -8,6 +8,7 @@ import {
   Delete,
   HttpCode,
   HttpStatus,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -20,11 +21,13 @@ import {
   ApiNoContentResponse,
   ApiBadRequestResponse,
   ApiNotFoundResponse,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { UserResponseDto } from './dtos/user-response.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @ApiTags('users')
 @Controller('users')
@@ -58,6 +61,8 @@ export class UsersController {
    * Get all users
    * GET /users
    */
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
   @Get()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
@@ -76,6 +81,8 @@ export class UsersController {
    * Get user by ID
    * GET /users/:id
    */
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
   @Get(':id')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
@@ -103,6 +110,8 @@ export class UsersController {
    * Get user by email
    * GET /users/email/:email
    */
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
   @Get('email/:email')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
@@ -130,6 +139,8 @@ export class UsersController {
    * Update user
    * PUT /users/:id
    */
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
   @Put(':id')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
@@ -165,6 +176,8 @@ export class UsersController {
    * Delete user
    * DELETE /users/:id
    */
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({
