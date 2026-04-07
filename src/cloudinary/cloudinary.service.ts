@@ -23,14 +23,17 @@ export class CloudinaryService {
    * @returns Upload response
    */
   async uploadFile(
-    file: any,
-    options: any = {},
+    file: { buffer: Buffer },
+    options: Record<string, unknown> = {},
   ): Promise<UploadApiResponse | UploadApiErrorResponse> {
     return new Promise((resolve, reject) => {
-      const uploadStream = cloudinary.uploader.upload_stream(options, (error, result) => {
-        if (error) reject(error);
-        else resolve(result);
-      });
+      const uploadStream = cloudinary.uploader.upload_stream(
+        options,
+        (error, result) => {
+          if (error) reject(error);
+          else resolve(result);
+        },
+      );
 
       uploadStream.end(file.buffer);
     });
@@ -44,7 +47,7 @@ export class CloudinaryService {
    */
   async uploadFromUrl(
     url: string,
-    options: any = {},
+    options: Record<string, unknown> = {},
   ): Promise<UploadApiResponse | UploadApiErrorResponse> {
     return cloudinary.uploader.upload(url, options);
   }
@@ -54,7 +57,7 @@ export class CloudinaryService {
    * @param publicId - Public ID of resource
    * @param options - Delete options
    */
-  async deleteFile(publicId: string, options: any = {}) {
+  async deleteFile(publicId: string, options: Record<string, unknown> = {}) {
     return cloudinary.uploader.destroy(publicId, options);
   }
 
@@ -81,7 +84,10 @@ export class CloudinaryService {
    * @param transform - Transform object
    * @returns Transformed URL
    */
-  getTransformUrl(publicId: string, transform: any = {}): string {
+  getTransformUrl(
+    publicId: string,
+    transform: Record<string, unknown> = {},
+  ): string {
     return cloudinary.url(publicId, transform);
   }
 
@@ -91,7 +97,10 @@ export class CloudinaryService {
    * @param transforms - Array of transform objects
    * @returns Transformed URL
    */
-  getMultiTransformUrl(publicId: string, transforms: any[]): string {
+  getMultiTransformUrl(
+    publicId: string,
+    transforms: Record<string, unknown>[],
+  ): string {
     return cloudinary.url(publicId, {
       transformation: transforms,
     });
@@ -103,7 +112,10 @@ export class CloudinaryService {
    * @param options - Transform options
    * @returns Responsive URL
    */
-  getResponsiveUrl(publicId: string, options: any = {}): string {
+  getResponsiveUrl(
+    publicId: string,
+    options: Record<string, unknown> = {},
+  ): string {
     return cloudinary.url(publicId, {
       crop: 'scale',
       width: 'auto',
@@ -163,7 +175,7 @@ export class CloudinaryService {
   getWebImage(
     publicId: string,
     width: number = 800,
-    options: any = {},
+    options: Record<string, unknown> = {},
   ): string {
     return cloudinary.url(publicId, {
       width,
@@ -230,7 +242,7 @@ export class CloudinaryService {
    * @param folder - Folder path
    * @param options - Additional options
    */
-  async listResources(folder: string, options: any = {}) {
+  async listResources(folder: string, options: Record<string, unknown> = {}) {
     return cloudinary.api.resources({
       type: 'upload',
       prefix: folder,
@@ -248,7 +260,9 @@ export class CloudinaryService {
     const timestamp = Math.round(new Date().getTime() / 1000) + expiresIn;
     const auth_token = crypto
       .createHash('sha256')
-      .update(`public_id=${publicId}&timestamp=${timestamp}${process.env.CLOUDINARY_API_SECRET}`)
+      .update(
+        `public_id=${publicId}&timestamp=${timestamp}${process.env.CLOUDINARY_API_SECRET}`,
+      )
       .digest('hex');
 
     return cloudinary.url(publicId, {

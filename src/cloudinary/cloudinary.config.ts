@@ -89,9 +89,7 @@ export const CLOUDINARY_UPLOAD_PRESETS = {
     resource_type: 'video',
     allowed_formats: ['mp4', 'avi', 'mov', 'webm'],
     max_file_size: 100000000, // 100MB
-    eager: [
-      { width: 300, height: 300, crop: 'pad', background: 'auto' },
-    ],
+    eager: [{ width: 300, height: 300, crop: 'pad', background: 'auto' }],
   },
 
   // Avatar
@@ -167,7 +165,10 @@ export const setupCloudinary = () => {
  * @param transform - Transform object
  * @returns Transformed URL
  */
-export const getTransformUrl = (publicId: string, transform: any) => {
+export const getTransformUrl = (
+  publicId: string,
+  transform: Record<string, unknown>,
+) => {
   return cloudinary.url(publicId, transform);
 };
 
@@ -177,7 +178,10 @@ export const getTransformUrl = (publicId: string, transform: any) => {
  * @param transforms - Array of transform objects
  * @returns Transformed URL
  */
-export const getMultiTransformUrl = (publicId: string, transforms: any[]) => {
+export const getMultiTransformUrl = (
+  publicId: string,
+  transforms: Record<string, unknown>[],
+) => {
   return cloudinary.url(publicId, {
     transformation: transforms,
   });

@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { getFirestore, WriteBatch } from 'firebase-admin/firestore';
+import * as firebaseAdmin from 'firebase-admin';
 import { ITask, TaskStatus, TaskPriority } from '../interfaces/task.interface';
 import { CreateTaskDto } from '../dtos/create-task.dto';
 import { UpdateTaskDto } from '../dtos/update-task.dto';
@@ -28,7 +29,8 @@ export class TasksRepository {
       updatedAt: new Date(),
     };
 
-    if (createTaskDto.dueDate) {
+    // Only set dueDate if provided and not null
+    if (createTaskDto.dueDate && createTaskDto.dueDate !== null) {
       task.dueDate = new Date(createTaskDto.dueDate);
     }
 
@@ -112,18 +114,31 @@ export class TasksRepository {
    * Update task
    */
   async update(id: string, updateTaskDto: UpdateTaskDto): Promise<ITask> {
-    const updateData: Partial<ITask> = {
-      ...updateTaskDto,
-      dueDate: updateTaskDto.dueDate
-        ? new Date(updateTaskDto.dueDate)
-        : undefined,
+    const updateData: Record<string, unknown> = {
       updatedAt: new Date(),
     };
 
-    // Remove undefined fields
-    Object.keys(updateData).forEach(
-      (key) => updateData[key] === undefined && delete updateData[key],
-    );
+    // Copy non-dueDate fields
+    if (updateTaskDto.title !== undefined)
+      updateData.title = updateTaskDto.title;
+    if (updateTaskDto.description !== undefined)
+      updateData.description = updateTaskDto.description;
+    if (updateTaskDto.status !== undefined)
+      updateData.status = updateTaskDto.status;
+    if (updateTaskDto.priority !== undefined)
+      updateData.priority = updateTaskDto.priority;
+    if (updateTaskDto.participantIds !== undefined)
+      updateData.participantIds = updateTaskDto.participantIds;
+
+    // Handle dueDate: convert to Date object or delete field
+    if ('dueDate' in updateTaskDto) {
+      if (updateTaskDto.dueDate === null) {
+        // Delete the field using Firestore's deleteField()
+        updateData.dueDate = firebaseAdmin.firestore.FieldValue.delete();
+      } else if (updateTaskDto.dueDate) {
+        updateData.dueDate = new Date(updateTaskDto.dueDate);
+      }
+    }
 
     await this.db.collection(this.collection).doc(id).update(updateData);
 

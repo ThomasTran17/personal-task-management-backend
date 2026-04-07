@@ -4,6 +4,7 @@ import {
   IsEnum,
   IsDateString,
   IsArray,
+  ValidateIf,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { TaskStatus, TaskPriority } from '../interfaces/task.interface';
@@ -61,11 +62,13 @@ export class UpdateTaskDto {
   participantIds?: string[];
 
   @ApiProperty({
-    description: 'Due date of the task',
+    description: 'Due date of the task. Set to null to remove the due date.',
     example: '2026-12-31',
     required: false,
+    nullable: true,
   })
+  @ValidateIf((obj) => obj.dueDate !== null && obj.dueDate !== undefined)
   @IsDateString({}, { message: 'Due date must be a valid ISO date string' })
   @IsOptional()
-  dueDate?: string;
+  dueDate?: string | null;
 }
