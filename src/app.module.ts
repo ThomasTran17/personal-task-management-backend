@@ -6,6 +6,7 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { TasksModule } from './tasks/tasks.module';
 import { CommonModule } from './common/common.module';
+import { CloudinaryModule } from './cloudinary';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { CommonModule } from './common/common.module';
     UsersModule,
     AuthModule,
     TasksModule,
+    CloudinaryModule,
   ],
   controllers: [AppController],
   providers: [AppService],
